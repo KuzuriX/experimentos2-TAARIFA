@@ -24,18 +24,23 @@ table(status_group)
 
 ## anidamiento de lugares
 
-levels(region)
+length(levels(region))
+length(levels(subvillage))
 levels(subvillage)
 
 levels(as.factor(region_code))
 
-levels(as.factor(district_code))
+length(levels(as.factor(district_code)))
 
 length(base$region[region_code=99])
 
 apply(table(region_code,region), 1, sum)
 
 dim(table(region_code,region))
+
+table(region_code, district_code)
+
+table(region, district_code)
 
 ###  mejor usar region code porque hay regiones con 2 codigos de region
 
