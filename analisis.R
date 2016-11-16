@@ -39,4 +39,5 @@ dim(table(region_code,region))
 
 ###  mejor usar region code porque hay regiones con 2 codigos de region
 
+#hola amiguis
 
