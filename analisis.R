@@ -15,6 +15,9 @@ respuesta<-read.csv('respuesta.csv', header = T)
 
 base<-merge(predictoras,respuesta,by= 'id')
 
+predictoras<-NULL
+respuesta<-NULL
+
 attach(base)
 
 
@@ -112,4 +115,4 @@ mod1<-glm(status~region_code+subvillage+amount_tsh+gps_height+installer+funder
 summary(mod1)
 drop1mod1<-drop1(mod1, test='LRT')
 
-step(lm(mpg~wt+drat+disp+qsec,data=mtcars),direction="backward")
+step1mod1<-step(mod1,direction="backward")
