@@ -102,39 +102,39 @@ mod2<-lmer(status~region*amount_tsh*gps_height*(1|installer)*(1|funder)
             *extraction_type_class*extraction_type_group*management*payment_type
             *quality_group*quantity*source*(1|waterpoint_type_group)
             , data = train)
-
-
-summary(mod1)
-NagelkerkeR2(mod1)
-
-drop1mod1<-drop1(mod1, test='LRT');drop1mod1
-
-step1mod1<-lmerTest::step(mod2); step1mod1
-
-
-mod3<-glmer(status ~ region + amount_tsh + gps_height + 
-            (1 | funder) + population + age + extraction_type_class + 
-            management + payment_type + quantity + source + 
-              (1 | waterpoint_type_group), 
-          family = "binomial", data = train)
-
-summary(mod3)
-NagelkerkeR2(mod2)
-
-
-mod4<-glmer(status ~ region + amount_tsh + population + 
-              +gps_height
-              +extraction_type_class 
-              +age 
-              +management 
-              +source 
-            +payment_type
-              +quantity
-            + (1 | funder) +
-              (1 | waterpoint_type_group:quantity), 
-            family = "binomial", data = train)
-
-anova(mod3,mod4)
+# 
+# 
+# summary(mod1)
+# NagelkerkeR2(mod1)
+# 
+# drop1mod1<-drop1(mod1, test='LRT');drop1mod1
+# 
+# step1mod1<-lmerTest::step(mod2); step1mod1
+# 
+# 
+# mod3<-glmer(status ~ region + amount_tsh + gps_height + 
+#             (1 | funder) + population + age + extraction_type_class + 
+#             management + payment_type + quantity + source + 
+#               (1 | waterpoint_type_group), 
+#           family = "binomial", data = train)
+# 
+# summary(mod3)
+# NagelkerkeR2(mod2)
+# 
+# 
+# mod4<-glmer(status ~ region + amount_tsh + population + 
+#               +gps_height
+#               +extraction_type_class 
+#               +age 
+#               +management 
+#               +source 
+#             +payment_type
+#               +quantity
+#             + (1 | funder) +
+#               (1 | waterpoint_type_group:quantity), 
+#             family = "binomial", data = train)
+# 
+# anova(mod3,mod4)
 
 modFinal<-glmer(status ~ region + amount_tsh + population + 
                   +gps_height
@@ -154,7 +154,4 @@ modFinal<-glmer(status ~ region + amount_tsh + population +
                 family = "binomial", data = train)
 
 summary(modFinal)
-drop1(modFinal, test="Chisq")
-
-drop1(mod4, test='LRT')
-NagelkerkeR2(mod3)
+d1ModFinal<- drop1(modFinal, test="Chisq")
