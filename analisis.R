@@ -7,6 +7,9 @@ setwd('/Users/ramonosx/Documents/GitHub/experimentos2-TAARIFA')
 
 library('dplyr')
 library('fmsb')
+library('lme4')
+library('lmerTest')
+options(contrasts=c("contr.sum","contr.poly"))
 
 # Carga de los datos
 ## LA VARIABLE A PREDECIR ES status_group
@@ -35,7 +38,7 @@ summary(status)
 ##################   MIGUEL  ########################
 
 #Funder - reduce factor levels
-NUM_LEVELS_FUNDER = 10 #Funder will have this many + 1 levels
+NUM_LEVELS_FUNDER = 20 #Funder will have this many + 1 levels
 #############################################################################################
 length(levels(funder))
 funderNames <- names(summary(base$funder)[1:NUM_LEVELS_FUNDER])
@@ -46,7 +49,7 @@ length(levels(funder))
 
 
 #Installer - reduce factor levels
-NUM_LEVELS_INSTALLER = 10 #Installer will have this many + 1 levels
+NUM_LEVELS_INSTALLER = 20 #Installer will have this many + 1 levels
 #############################################################################################
 length(levels(installer))
 
@@ -55,6 +58,9 @@ installer <- factor(base$installer, levels=c(installerNames, "Other"))
 installer[is.na(installer)] <- "Other"
 base$installer <- installer
 length(levels(installer))
+
+base$waterpoint_type_group[base$waterpoint_type_group=="dam"]<-"other"
+base$waterpoint_type_group[base$waterpoint_type_group=="cattle trough"]<-"other"
 
 base<-base[!(base$management=='unknown'),]
 base<-base[!(base$scheme_management==''),]
@@ -85,35 +91,70 @@ test<- base  %>% sample_n(200)
 # train1 <- train[train_ind, ]
 # test1 <- train[-train_ind, ]
 
-mod1<-glm(status~region+amount_tsh+gps_height+installer+funder
+mod1<-glmer(status~region+amount_tsh+gps_height+(1|installer)+(1|funder)
           +basin+population+scheme_management+age
           +extraction_type_class+extraction_type_group+management+payment_type
-          +quality_group+quantity+source+waterpoint_type_group,
+          +quality_group+quantity+source+(1|waterpoint_type_group),
           family = 'binomial', data = train)
+
+mod2<-lmer(status~region*amount_tsh*gps_height*(1|installer)*(1|funder)
+            *basin*population*scheme_management*age
+            *extraction_type_class*extraction_type_group*management*payment_type
+            *quality_group*quantity*source*(1|waterpoint_type_group)
+            , data = train)
+
 
 summary(mod1)
 NagelkerkeR2(mod1)
 
 drop1mod1<-drop1(mod1, test='LRT');drop1mod1
 
-step1mod1<-step(mod1,direction="backward"); step1mod1
+step1mod1<-lmerTest::step(mod2); step1mod1
 
-mod2<-glm(status ~ region + funder + population + age + extraction_type_group + 
-            management + payment_type + quantity + source + waterpoint_type_group, 
+
+mod3<-glmer(status ~ region + amount_tsh + gps_height + 
+            (1 | funder) + population + age + extraction_type_class + 
+            management + payment_type + quantity + source + 
+              (1 | waterpoint_type_group), 
           family = "binomial", data = train)
 
-summary(mod2)
+summary(mod3)
 NagelkerkeR2(mod2)
 
-mod3<-glm(status ~ region + funder + population + age + extraction_type_group + 
-            management + payment_type + quantity + source + waterpoint_type_group, 
-          family = "binomial", data = train)
-drop1(mod3, test='LRT')
-NagelkerkeR2(mod3)
 
-mod4<-glm(status ~ region*population*quantity*waterpoint_type_group 
-          *funder*management * age * extraction_type_group * 
-          payment_type * source , 
-          family = "binomial", data = train)
+mod4<-glmer(status ~ region + amount_tsh + population + 
+              +gps_height
+              +extraction_type_class 
+              +age 
+              +management 
+              +source 
+            +payment_type
+              +quantity
+            + (1 | funder) +
+              (1 | waterpoint_type_group:quantity), 
+            family = "binomial", data = train)
+
+anova(mod3,mod4)
+
+modFinal<-glmer(status ~ region + amount_tsh + population + 
+                  +gps_height
+                +extraction_type_class 
+                +age 
+                +management 
+                +source 
+                +payment_type
+                +quantity
+                + (1 | funder:amount_tsh) 
+                +(1 | funder:population) 
+                 + (1 | waterpoint_type_group:population)
++ (1 | waterpoint_type_group:gps_height)
+   +  (1 | waterpoint_type_group:extraction_type_class)
+       +  (1 | waterpoint_type_group:age)
+       +  (1 | waterpoint_type_group:payment_type), 
+                family = "binomial", data = train)
+
+summary(modFinal)
+drop1(modFinal, test="Chisq")
+
 drop1(mod4, test='LRT')
 NagelkerkeR2(mod3)
