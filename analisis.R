@@ -426,5 +426,33 @@ mat_or
 
 ####SOURCE
 
-betas=c(0.0088,-0.)
-sd_beta=c()
+betas=c(0.0088,-0.531,-2.316,0.13,-0.258,1.64,1.006,-0.38)
+sd_beta=c(0.559,0.736,1.168,0.354,1.162,0.81,0.3677,0.424)
+
+#para hacer ic
+dif_betas=diff(combn(betas,2))
+
+comb=combn(sd_beta,2)
+sum_sd=0
+for(i in 1:length(comb[1,])){
+  sum_sd[i]=sum(comb[,i])
+}
+sum_sd
+
+OR=numeric(0)
+ic_OR=matrix(0,length(comb[1,]),ncol=2)
+ic_b=numeric(0)
+z_bonf=pnorm(1-(0.05/(2*51)))
+
+for(i in 1:length(comb[1,])){
+  OR[i] =round(exp(dif_betas[i]),3)
+  ic_b=c(dif_betas[i]-z_bonf*sum_sd[i],dif_betas[i]+z_bonf*sum_sd[i])
+  ic_OR[i,] =exp(ic_b)
+}
+mat_or=cbind(OR,ic_OR)
+rownames(mat_or)=c("1-2","1-3","1-4","1-5","1-6","1-7","1-8","2-3"
+                   ,"2-4","2-5","2-6","2-7","2-8","3-4","3-5","3-6"
+                   ,"3-7","3-8","4-5","4-6","4-7","4-8"
+                   ,"5-6","5-7","5-8","6-7","6-8","7-8")
+colnames(mat_or)=c("OR","Lim inf","Lim sup")
+mat_or
