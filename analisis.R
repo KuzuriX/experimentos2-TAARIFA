@@ -303,6 +303,7 @@ modFinal2_sin<-glmer(status ~ region + amount_tsh + population +
                  +management+source+payment_type+quantity+ (1 | funder) 
                  +(1 | waterpoint_type_group), family = "binomial", data = train,REML=F)
 summary(modFinal2_sin)
+rsquared(modFinal2_sin)
 
 #no sirve
 prof=profile(modFinal2_sin)
