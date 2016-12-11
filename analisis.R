@@ -424,6 +424,8 @@ mat_or
 
 
 
+
+
 ####SOURCE
 
 betas=c(0.0088,-0.531,-2.316,0.13,-0.258,1.64,1.006,-0.38)
@@ -456,3 +458,68 @@ rownames(mat_or)=c("1-2","1-3","1-4","1-5","1-6","1-7","1-8","2-3"
                    ,"5-6","5-7","5-8","6-7","6-8","7-8")
 colnames(mat_or)=c("OR","Lim inf","Lim sup")
 mat_or
+
+####PAYMENT_TYPE
+
+betas=c(0.248,0.779,-0.447,0.2397,-1.461)
+sd_beta=c(0.3919,0.2841,0.2464,0.3735,0.7677)
+
+#para hacer ic
+dif_betas=diff(combn(betas,2))
+
+comb=combn(sd_beta,2)
+sum_sd=0
+for(i in 1:length(comb[1,])){
+  sum_sd[i]=sum(comb[,i])
+}
+sum_sd
+
+OR=numeric(0)
+ic_OR=matrix(0,length(comb[1,]),ncol=2)
+ic_b=numeric(0)
+z_bonf=pnorm(1-(0.05/(2*51)))
+
+for(i in 1:length(comb[1,])){
+  OR[i] =round(exp(dif_betas[i]),3)
+  ic_b=c(dif_betas[i]-z_bonf*sum_sd[i],dif_betas[i]+z_bonf*sum_sd[i])
+  ic_OR[i,] =exp(ic_b)
+}
+mat_or=cbind(OR,ic_OR)
+rownames(mat_or)=c("1-2","1-3","1-4","1-5","2-3"
+                   ,"2-4","2-5","3-4","3-5","4-5")
+colnames(mat_or)=c("OR","Lim inf","Lim sup")
+mat_or
+
+
+
+
+####quantity  ######da raro
+
+betas=c(-14.96,5.15,4.66)
+sd_beta=c(757.5,252.5,252.5)
+
+#para hacer ic
+dif_betas=diff(combn(betas,2))
+
+comb=combn(sd_beta,2)
+sum_sd=0
+for(i in 1:length(comb[1,])){
+  sum_sd[i]=sum(comb[,i])
+}
+sum_sd
+
+OR=numeric(0)
+ic_OR=matrix(0,length(comb[1,]),ncol=2)
+ic_b=numeric(0)
+z_bonf=pnorm(1-(0.05/(2*51)))
+
+for(i in 1:length(comb[1,])){
+  OR[i] =round(exp(dif_betas[i]),3)
+  ic_b=c(dif_betas[i]-z_bonf*sum_sd[i],dif_betas[i]+z_bonf*sum_sd[i])
+  ic_OR[i,] =exp(ic_b)
+}
+mat_or=cbind(OR,ic_OR)
+rownames(mat_or)=c("1-2","1-3","2-3")
+colnames(mat_or)=c("OR","Lim inf","Lim sup")
+mat_or
+
