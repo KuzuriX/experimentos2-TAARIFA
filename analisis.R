@@ -4,7 +4,7 @@ setwd('/Users/ramonosx/Documents/GitHub/experimentos2-TAARIFA')
 
 
 # Librerias
-
+library(car)
 library('dplyr')
 library('fmsb')
 library('lme4')
@@ -82,7 +82,7 @@ base$age<-base$construction_year-1960
 
 
 
-train$status
+#train$status
 
 #### PRIMER MODELO!!!! WOOOOOOOO
 set.seed(123)
@@ -587,3 +587,14 @@ rownames(mat_or)=c("1-2","1-3","2-3")
 colnames(mat_or)=c("OR","Lim inf","Lim sup")
 mat_or
 
+
+
+#clasificacion
+#p=predict(modFinal2,type="response")
+fit=fitted(modFinal2)
+class=1*(fit>0.5)
+sum(diag(prop.table(table(class,train$status))))
+
+####guardar base 
+pozos=train
+save(pozos, file="pozos.Rdata")
