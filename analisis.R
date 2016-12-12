@@ -95,6 +95,7 @@ conteo=conteo[conteo != 0]
 barplot(conteo)
 
 pago<-table(train$payment_type)
+table(train$extraction_type)
 pago=pago[pago != 0]
 barplot(pago,ylim=c(0,500))
 
@@ -192,18 +193,36 @@ modFinal2
 ####################################################################################3
 ilogit=function(x) exp(x)/(1+exp(x))
 
-h=c(1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0)
-length(h)==length(coef)
-modFinal2
+pago1=c(1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0)
+pago2=c(1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0)
+pago3=c(1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0)
+
 coef=fixef(modFinal2)
 b=coef[18]#tsh, la probabilidad conforme aumenta la cantidad de agua disponible de que la bomba sea funcional
-m1=sum(coef*h)#me imagino que está en litros
-curve(ilogit(m1+b*x),xlim=c(0,500000), ylim=c(0,1), ylab="Probabilidad",xlab=" ")
+                             #me imagino que está en litros
+m1.1=sum(coef*pago1) 
+m1.2=sum(coef*pago2)
+m1.3=sum(coef*pago3)
+curve(ilogit(m1.1+b*x),xlim=c(0,50000), ylim=c(0,1), ylab="Probabilidad",xlab="Cantidad de agua (L)")
+curve(ilogit(m1.2+b*x),add=T,col=2)
+curve(ilogit(m1.3+b*x),add=T,col=3)
+legend(x=0,y=1,c("Pago anual", "Pago mensual", "No paga"),col=c(1,2,3),lty=1,bty="n",cex=0.7)
 ###Este para todas 1 de la variables categoricas, es decir, fijando para la región 1, tipo de extracción 1,
 #administración 1, fuente 1, tipo de pago 1 y cantidad 1
 
+region1=c(1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0)
+region2=c(1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0)
+region3=c(1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0)
+
+m2.1=sum(coef*region1) 
+m2.2=sum(coef*region2)
+m2.3=sum(coef*region3)
 b1=coef[19]#cantidad de población alrededor
-curve(ilogit(m1+b1*x), ylim=c(0,1), col=2,add=T)
+curve(ilogit(m2.1+b1*x),xlim=c(0,1000000), ylim=c(0,1), ylab="Probabilidad",xlab="Población")
+curve(ilogit(m2.2+b1*x),add=T,col=2)
+curve(ilogit(m2.3+b1*x),add=T,col=3)
+legend(x=0,y=1,c("Region 1", "Region 4", "Region 11"),col=c(1,2,3),lty=1,bty="n",cex=0.7)
+
 
 b2=coef[26]#Edad del pozo
 curve(ilogit(m1+b2*x), ylim=c(0,1), col=3,add=T)
