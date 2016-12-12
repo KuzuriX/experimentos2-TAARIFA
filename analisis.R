@@ -11,6 +11,7 @@ library('lme4')
 library('lmerTest')
 library(lattice)
 library(piecewiseSEM)
+library(data.table)
 options(contrasts=c("contr.sum","contr.poly"))
 
 # Carga de los datos
@@ -182,7 +183,7 @@ summary(modFinal2)
 
 #R2 
 
-rsquared(modFinal2)
+rsquared(modFinal2)  
 
 #referencias
 contrasts(factor(train$status)) # referencia es el 1: funcionan
@@ -283,7 +284,7 @@ mod11<-glmer(status ~ region + amount_tsh + population +
                  +(1 | waterpoint_type_group), family = "binomial", data = train)
 
 anova(mod11,modFinal2)
-#Se obtuvo: estadistico=5.0903 y p-value=0.02406 -- no se rechaza 
+#Se obtuvo: estadistico=5.0903 y p-value=0.02406 -- se rechaza 
 
 
 #12(1 | waterpoint_type_group)
@@ -323,13 +324,18 @@ coefs<-data.table(summary(modFinal2_sin)$coef[,1:2])
 #amount
 
 beta_a=coefs['amount_tsh',1]
+beta_a=coefs[18,1]
 sd_beta=coefs['amount_tsh',2]
+sd_beta=coefs[18,2]
+
+
 
 OR_amount=exp(100*beta_a)  
 OR_amount  
 
 z_bonf=pnorm(1-(0.05/(2*51)))
 ic_beta=c(beta_a-z_bonf*sd_beta,beta_a+z_bonf*sd_beta)
+ic_beta=c(0.000120,0.000358)
 ic_OR_amount=exp(100*ic_beta)
 ic_OR_amount
 
@@ -337,13 +343,16 @@ ic_OR_amount
 #age
 
 beta_age=coefs['age',1]
+beta_age=coefs[26,1]
 sd_beta_age=coefs['age',2]
+sd_beta_age=coefs[26,2]
 
 OR_age=exp(5*beta_age)  #5 a?os
 OR_age 
 
 z_bonf=pnorm(1-(0.05/(2*51)))
 ic_beta=c(beta_age-z_bonf*sd_beta_age,beta_age+z_bonf*sd_beta_age)
+ic_beta=c(0.0304,0.0446)
 ic_OR_age=exp(5*ic_beta)
 ic_OR_age
 
@@ -353,6 +362,8 @@ ic_OR_age
 betas_extrac=coefs[paste0("extraction_type_class",c(1,2,3,4,5)),1]
 sd_beta_extrac=coefs[paste0("extraction_type_class",c(1,2,3,4,5)),2]
 
+betas_extrac=c(0.1178,1.389,-0.5362,-0.3721,0.0984)
+sd_beta_extrac=c(0.4696,0.4786,0.5599,0.4480,0.7977)
 
 #para hacer ic
 dif_betas=diff(combn(betas_extrac,2))
@@ -389,6 +400,11 @@ mat_or_extract
 
 betas=coefs[paste0("region",c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)),1]
 sd_beta=coefs[paste0("region",c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)),2]
+betas=round(coefs[2:17,1],3)
+sd_beta=round(coefs[2:17,2],3)
+
+betas=c(0.252,0.259,0.529,-1.173,-1.030,-0.433,-0.292,-0.203,-0.059,0.901,-15.287,-0.435,-0.846,0.009,17.697,-0.152)
+sd_beta=c(771.818,771.818,771.818,771.818,771.818,771.818,771.818,771.818,771.818,771.818,7117.465,771.818,771.818,771.818,10121.135,771.818)
 
 
 #para hacer ic
@@ -401,9 +417,6 @@ for(i in 1:length(comb[1,])){
 }
 sum_sd
 
-#Referencia es wug
-#categorias eb orden:  "company" "other" "other - school"   "parastatal" "private operator" "trust"           
-# "vwc"     "water authority"  "water board"      "wua"  "wug"     
 
 
 OR=numeric(0)
@@ -436,6 +449,12 @@ mat_or
 betas=coefs[paste0("source",c(1,2,3,4,5,6,7,8)),1]
 sd_beta=coefs[paste0("source",c(1,2,3,4,5,6,7,8)),2]
 
+betas=round(coefs[33:40,1],3)
+sd_beta=round(coefs[33:40,2],3)
+
+betas=c(-0.102,-0.577,-2.458,0.059,-0.005,1.858,1.051,-0.462)
+sd_beta=c(0.556,0.714,1.163,0.357,1.248,0.803,0.365,0.429)
+
 #para hacer ic
 dif_betas=diff(combn(betas,2))
 
@@ -453,14 +472,12 @@ z_bonf=pnorm(1-(0.05/(2*51)))
 
 for(i in 1:length(comb[1,])){
   OR[i] =round(exp(dif_betas[i]),3)
-  ic_b=c(dif_betas[i]-z_bonf*sum_sd[i],dif_betas[i]+z_bonf*sum_sd[i])
+  ic_b=round(c(dif_betas[i]-z_bonf*sum_sd[i],dif_betas[i]+z_bonf*sum_sd[i]),3)
   ic_OR[i,] =exp(ic_b)
 }
-mat_or=cbind(OR,ic_OR)
-rownames(mat_or)=c("1-2","1-3","1-4","1-5","1-6","1-7","1-8","2-3"
-                   ,"2-4","2-5","2-6","2-7","2-8","3-4","3-5","3-6"
-                   ,"3-7","3-8","4-5","4-6","4-7","4-8"
-                   ,"5-6","5-7","5-8","6-7","6-8","7-8")
+mat_or=round(cbind(OR,ic_OR),3)
+rownames(mat_or)=c("1-2","1-3","1-4","1-5","1-6","1-7","1-8","2-3" ,"2-4","2-5","2-6","2-7","2-8","3-4","3-5","3-6"
+                   ,"3-7","3-8","4-5","4-6","4-7","4-8","5-6","5-7","5-8","6-7","6-8","7-8")
 colnames(mat_or)=c("OR","Lim inf","Lim sup")
 mat_or
 
@@ -468,6 +485,14 @@ mat_or
 
 betas=coefs[paste0("source",c(1,2,3,4,5)),1]
 sd_beta=coefs[paste0("source",c(1,2,3,4,5)),2]
+
+betas=round(coefs[41:45,1],2)
+sd_beta=round(coefs[41:45,2],2)
+
+betas=c(0.22,0.51,-0.40,0.23,-1.26)
+sd_beta=c(0.40,0.27,0.25,0.37,0.74)
+
+
 
 #para hacer ic
 dif_betas=diff(combn(betas,2))
@@ -502,6 +527,12 @@ mat_or
 
 betas=coefs[paste0("quantity",c(1,2,3)),1]
 sd_beta=coefs[paste0("quantity",c(1,2,3)),2]
+
+
+betas=round(coefs[46:48,1],3)
+sd_beta=round(coefs[46:48,2],3)
+betas=c(-14.99,5.22,4.69)
+sd_beta=c(761.86,253.95,253.95)
 
 #para hacer ic
 dif_betas=diff(combn(betas,2))
