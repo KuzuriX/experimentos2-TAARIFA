@@ -198,15 +198,17 @@ modFinal2
 coef=fixef(modFinal2)
 b=coef[18]#tsh, la probabilidad conforme aumenta la cantidad de agua disponible de que la bomba sea funcional
 m1=sum(coef*h)#me imagino que está en litros
-curve(ilogit(m1+b*x),xlim=c(0,50000), ylim=c(0,1), ylab="Probabilidad",xlab="Agua")
+curve(ilogit(m1+b*x),xlim=c(0,500000), ylim=c(0,1), ylab="Probabilidad",xlab=" ")
 ###Este para todas 1 de la variables categoricas, es decir, fijando para la región 1, tipo de extracción 1,
 #administración 1, fuente 1, tipo de pago 1 y cantidad 1
 
 b1=coef[19]#cantidad de población alrededor
-curve(ilogit(m1+b1*x),xlim=c(0,500000), ylim=c(0,1), col=2,xlab="Población cercana al pozo",ylab="Probabilidad")
+curve(ilogit(m1+b1*x), ylim=c(0,1), col=2,add=T)
 
-b2=coef[26]
-curve(ilogit(m1+b2*x),xlim=c(0,250), ylim=c(0,1), col=3,xlab="Edad del pozo",ylab="Probabilidad")
+b2=coef[26]#Edad del pozo
+curve(ilogit(m1+b2*x), ylim=c(0,1), col=3,add=T)
+
+
 
 ##################################################################################################
 #R2 
