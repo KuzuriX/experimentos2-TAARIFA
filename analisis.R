@@ -188,10 +188,27 @@ modFinal2<-glmer(status ~ region + amount_tsh + population +
                 +management+source+payment_type+quantity+ (1 | funder) 
                 +(1 | waterpoint_type_group), family = "binomial", data = train)
 
+modFinal2
+####################################################################################3
+ilogit=function(x) exp(x)/(1+exp(x))
 
+h=c(1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0)
+length(h)==length(coef)
+modFinal2
+coef=fixef(modFinal2)
+b=coef[18]#tsh, la probabilidad conforme aumenta la cantidad de agua disponible de que la bomba sea funcional
+m1=sum(coef*h)#me imagino que está en litros
+curve(ilogit(m1+b*x),xlim=c(0,50000), ylim=c(0,1), ylab="Probabilidad",xlab="Agua")
+###Este para todas 1 de la variables categoricas, es decir, fijando para la región 1, tipo de extracción 1,
+#administración 1, fuente 1, tipo de pago 1 y cantidad 1
 
-summary(modFinal2)
+b1=coef[19]#cantidad de población alrededor
+curve(ilogit(m1+b1*x),xlim=c(0,500000), ylim=c(0,1), col=2,xlab="Población cercana al pozo",ylab="Probabilidad")
 
+b2=coef[26]
+curve(ilogit(m1+b2*x),xlim=c(0,250), ylim=c(0,1), col=3,xlab="Edad del pozo",ylab="Probabilidad")
+
+##################################################################################################
 #R2 
 
 rsquared(modFinal2)  
