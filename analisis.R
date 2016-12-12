@@ -616,6 +616,9 @@ fit=fitted(modFinal2)
 class=1*(fit>0.5)
 sum(diag(prop.table(table(class,train$status))))
 
+prop.table(table(class,train$status),2)
+table(class,train$status)
+
 ####guardar base 
 pozos=train
 save(pozos, file="pozos.Rdata")
