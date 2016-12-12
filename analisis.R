@@ -82,15 +82,24 @@ base$age<-base$construction_year-1960
 
 
 
-
+train$status
 
 #### PRIMER MODELO!!!! WOOOOOOOO
 set.seed(123)
 train<- base  %>% sample_n(1000)
 test<- base  %>% sample_n(200)
+#############################################################################
+##Descriptivo
+conteo<-table(train$extraction_type)
+conteo=conteo[conteo != 0]
+barplot(conteo)
+
+pago<-table(train$payment_type)
+pago=pago[pago != 0]
+barplot(pago,ylim=c(0,500))
 
 
-
+#############################################################################
 # 
 # #modelo con todo
 # 
@@ -178,6 +187,8 @@ modFinal2<-glmer(status ~ region + amount_tsh + population +
                 +gps_height+extraction_type_class +age 
                 +management+source+payment_type+quantity+ (1 | funder) 
                 +(1 | waterpoint_type_group), family = "binomial", data = train)
+
+
 
 summary(modFinal2)
 
